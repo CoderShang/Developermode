@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>加密项密码生成器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 25px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #2575fc;
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.1);
+        }
+        
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(37, 117, 252, 0.4);
+        }
+        
+        .generate-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .result {
+            margin-top: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s;
+        }
+        
+        .result-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .password {
+            font-size: 28px;
+            font-weight: bold;
+            color: #212529;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-all;
+        }
+        
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+        }
+        
+        .copy-btn.copied {
+            background: #17a2b8;
+        }
+        
+        .instructions {
+            margin-top: 25px;
+            background: #e7f3ff;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 14px;
+            color: #0c5460;
+            border-left: 4px solid #2575fc;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .password {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-key"></i> 加密项密码生成器</h1>
+            <p>输入参数生成专属加密密码</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-group">
+                <label for="param1"><i class="fas fa-tag"></i> 参数一</label>
+                <input type="text" id="param1" placeholder="请输入第一个参数">
+            </div>
+            
+            <div class="input-group">
+                <label for="param2"><i class="fas fa-tag"></i> 参数二</label>
+                <input type="text" id="param2" placeholder="请输入第二个参数">
+            </div>
+            
+            <button class="generate-btn" id="generateBtn">
+                <i class="fas fa-cogs"></i> 生成密码
+            </button>
+            
+            <div class="result" id="result">
+                <div class="result-label">
+                    <i class="fas fa-lock"></i> 生成的密码
+                </div>
+                <div class="password" id="password">
+                    请输入参数并点击生成
+                </div>
+            </div>
+            
+            <button class="copy-btn" id="copyBtn">
+                <i class="fas fa-copy"></i> 复制密码
+            </button>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+                <ul>
+                    <li>输入两个参数后点击"生成密码"按钮</li>
+                    <li>系统将根据参数生成专属加密密码</li>
+                    <li>点击"复制密码"按钮可快速复制生成的密码</li>
+                    <li>密码生成算法可根据需求自定义</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const param1Input = document.getElementById('param1');
+            const param2Input = document.getElementById('param2');
+            const passwordElement = document.getElementById('password');
+            const resultElement = document.getElementById('result');
+            
+            // 生成密码函数 - 算法部分预留为空
+            function generatePassword(param1, param2) {
+                // 这里可以添加自定义的密码生成算法
+                // 目前只是简单示例，将参数组合并生成一个伪随机字符串
+                
+                // 示例算法（可替换）：
+                // 将两个参数拼接，计算其哈希值，然后取前12个字符
+                const combined = param1 + param2;
+                
+                // 简单哈希函数示例（实际应用中应使用更安全的哈希算法）
+                let hash = 0;
+                for (let i = 0; i < combined.length; i++) {
+                    const char = combined.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // 转换为32位整数
+                }
+                
+                // 生成12位密码
+                let password = Math.abs(hash).toString(36).substring(0, 12);
+                
+                // 如果密码长度不足，用0填充
+                while (password.length < 12) {
+                    password += '0';
+                }
+                
+                return password.toUpperCase();
+            }
+            
+            // 生成密码按钮点击事件
+            generateBtn.addEventListener('click', function() {
+                const param1 = param1Input.value.trim();
+                const param2 = param2Input.value.trim();
+                
+                if (!param1 || !param2) {
+                    passwordElement.textContent = '请填写两个参数';
+                    resultElement.style.borderColor = '#ffc107';
+                    return;
+                }
+                
+                // 显示生成中状态
+                passwordElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+                
+                // 模拟生成过程（实际应用中不需要延迟）
+                setTimeout(() => {
+                    const password = generatePassword(param1, param2);
+                    passwordElement.textContent = password;
+                    resultElement.style.borderColor = '#28a745';
+                    
+                    // 重置复制按钮状态
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> 复制密码';
+                    copyBtn.classList.remove('copied');
+                }, 500);
+            });
+            
+            // 复制密码按钮点击事件
+            copyBtn.addEventListener('click', function() {
+                const password = passwordElement.textContent;
+                
+                if (!password || password === '请输入参数并点击生成' || password.includes('生成中') || password === '请填写两个参数') {
+                    return;
+                }
+                
+                // 使用现代剪贴板API
+                navigator.clipboard.writeText(password).then(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    copyBtn.classList.add('copied');
+                    
+                    // 3秒后恢复原状
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> 复制密码';
+                        copyBtn.classList.remove('copied');
+                    }, 3000);
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    alert('复制失败，请手动选择密码文本进行复制');
+                });
+            });
+            
+            // 输入框回车键支持
+            [param1Input, param2Input].forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        generateBtn.click();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
