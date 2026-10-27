@@ -174,9 +174,9 @@ body.light .navbar{background:rgba(255,255,255,.85)}
 .vt-btn.active{background:var(--panel);color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.1)}
 
 .project-list{display:flex;flex-direction:column;gap:12px}
-.kanban-board{display:grid;grid-template-columns:repeat(4, 1fr);gap:16px;overflow-x:auto;min-height:500px}
-.kanban-col{background:var(--input-bg);border:1px solid var(--line-soft);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:12px}
-.kanban-col h4{font-size:13px;color:var(--muted);text-align:center;padding-bottom:8px;border-bottom:1px dashed var(--line-soft);display:flex;justify-content:space-between}
+.kanban-board{display:grid;grid-template-columns:repeat(4, 1fr);gap:16px;overflow-x:auto;align-items:start;}
+.kanban-col{background:var(--input-bg);border:1px solid var(--line-soft);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 200px);}
+.kanban-col h4{font-size:13px;color:var(--muted);text-align:center;padding-bottom:8px;border-bottom:1px dashed var(--line-soft);display:flex;justify-content:space-between;position:sticky;top:0;background:var(--input-bg);z-index:10;}
 
 .project-card{background:var(--panel);border:1px solid var(--line-soft);border-radius:14px;padding:16px 17px;position:relative;transition:all .26s;cursor:pointer;overflow:hidden}
 .project-card:hover{transform:translateY(-2px);border-color:rgba(99,102,241,.4);box-shadow:0 22px 46px -28px rgba(99,102,241,.5)}
@@ -245,6 +245,22 @@ tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);}
 .modal-root.show .modal{transform:translateY(0) scale(1)}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .modal-close{width:30px;height:30px;border-radius:9px;border:1px solid var(--line-soft);background:var(--input-bg);color:var(--muted);cursor:pointer}
+
+/* ★ 右下角全局消息通知 */
+.msg-notif {
+  position: fixed; right: 20px; bottom: 20px; z-index: 600;
+  width: 300px; background: var(--panel);
+  border: 1px solid var(--primary); border-left: 4px solid var(--primary);
+  border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  padding: 14px 16px; cursor: pointer;
+  animation: slideInRight 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform 0.2s, background 0.2s;
+}
+.msg-notif:hover { transform: translateY(-2px); background: var(--input-bg); }
+.msg-notif .title { font-weight: bold; font-size: 13px; color: var(--primary-soft); display: flex; justify-content: space-between; align-items: center;}
+.msg-notif .content { font-size: 12px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
 
 @media (max-width:1180px){.workbench-grid{grid-template-columns:1fr}.col-side{position:static}.kanban-board{grid-template-columns:repeat(2, 1fr)}}
 @media (max-width:600px){.form-grid{grid-template-columns:1fr}.kanban-board{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}.im-sidebar{width:80px;}.im-contact span{display:none}.im-unread{position:absolute;top:5px;right:5px;margin:0;}}
@@ -328,7 +344,6 @@ tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);}
   </header>
 
   <main class="app-main">
-    <!-- 工作台 -->
     <section class="view" id="view-workbench">
       <div class="stats-grid" id="statsGrid"></div>
       <div class="workbench-grid">
@@ -364,7 +379,7 @@ tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);}
           </div>
 
           <div class="project-list" id="projectList"></div>
-          <div class="kanban-board" id="kanbanBoard" hidden></div>
+          <div class="kanban-board" id="kanbanBoard" style="display:none"></div>
 
           <div class="card" style="margin-top:18px">
             <div class="card-head"><h3>工作趋势</h3></div>
@@ -389,7 +404,6 @@ tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);}
       </div>
     </section>
 
-    <!-- 消息系统 -->
     <section class="view" id="view-messages" hidden>
       <div class="im-container">
         <div class="im-sidebar">
@@ -417,7 +431,6 @@ tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);}
       </div>
     </section>
 
-    <!-- 个人中心 -->
     <section class="view" id="view-profile" hidden>
       <div class="card" style="max-width:500px;margin:0 auto">
         <div class="card-head"><h3>个人中心</h3></div>
@@ -429,7 +442,6 @@ tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);}
 
         <div class="field" style="margin-bottom:14px"><label>修改昵称</label><input class="input" id="inputNickname" /></div>
         <button class="btn" id="btnSaveNickname" style="margin-bottom:14px">保存昵称</button>
-        
         <button class="btn ghost block" id="btnGoPassword" style="margin-bottom:24px">修改密码 >></button>
 
         <div style="border-top:1px solid var(--line-soft);padding-top:20px;margin-top:20px">
@@ -439,7 +451,6 @@ tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);}
       </div>
     </section>
 
-    <!-- 独立修改密码页面 -->
     <section class="view" id="view-password" hidden>
       <div class="card" style="max-width:400px;margin:0 auto">
         <div class="card-head">
@@ -453,7 +464,6 @@ tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);}
       </div>
     </section>
 
-    <!-- 用户管理 -->
     <section class="view" id="view-admin" hidden>
       <div class="card" style="margin-bottom:18px">
         <div class="card-head"><h3>全部用户</h3></div>
@@ -531,7 +541,6 @@ const state = {
   projects: [], notes: [], summaries: {}, pool: [], users: [], userProjectCounts: {},
   filters: { q: '', status: 'all', model: 'all' },
   editingId: null, summaryTimer: null, viewMode: 'list',
-  // IM 聊天相关状态
   chatRooms: [], currentRoom: null, chatChannel: null, unreadMessages: {}
 };
 
@@ -635,7 +644,6 @@ async function afterLogin() {
     
     updateNavUser(); renderAll(); showLoading(false);
     
-    // 启动实时消息监听
     initRealtime();
   } catch (e) { showLoading(false); toast('加载失败: ' + e.message, 'err'); }
 }
@@ -676,13 +684,22 @@ function getFiltered() {
 function renderProjects() {
   const list = getFiltered();
   if (state.viewMode === 'list') {
-    $('#projectList').hidden = false; $('#kanbanBoard').hidden = true;
+    $('#projectList').style.display = 'flex'; 
+    $('#kanbanBoard').style.display = 'none';
     $('#projectList').innerHTML = list.map(p => createCardHTML(p)).join('');
   } else {
-    $('#projectList').hidden = true; $('#kanbanBoard').hidden = false;
+    $('#projectList').style.display = 'none'; 
+    $('#kanbanBoard').style.display = 'grid';
     $('#kanbanBoard').innerHTML = STATUSES.map(s => {
       const colTasks = list.filter(p => p.status === s);
-      return `<div class="kanban-col"><h4>${s} <span>${colTasks.length}</span></h4>${colTasks.map(p => createCardHTML(p)).join('')}</div>`;
+      return `
+        <div class="kanban-col">
+          <h4>${s} <span>${colTasks.length}</span></h4>
+          <div style="display:flex;flex-direction:column;gap:12px;overflow-y:auto;padding-bottom:10px;">
+            ${colTasks.map(p => createCardHTML(p)).join('')}
+          </div>
+        </div>
+      `;
     }).join('');
   }
 }
@@ -792,7 +809,6 @@ async function publishProject(id) {
   renderProjects(); renderPool(); toast('发布成功');
 }
 
-// === 任务池与撤销 ===
 function openTaskDetail(id, isPool) {
   const p = isPool ? state.pool.find(x=>x.id===id) : state.projects.find(x => x.id === id);
   if (!p) return;
@@ -886,7 +902,6 @@ async function acceptTask(poolId) {
   renderAll(); toast('接取成功');
 }
 
-// 撤销任务
 async function revokeTask(poolId) {
   if (!confirm('警告：撤销后该任务将作废，且无法被员工接取，确定撤销吗？')) return;
   showLoading(true);
@@ -920,7 +935,6 @@ $('#summaryInput').addEventListener('input', () => {
   state.summaryTimer = setTimeout(async () => { state.summaries[todayStr()] = $('#summaryInput').value; await saveWorkData({ summaries: state.summaries }); }, 1000);
 });
 
-// === 个人中心 & 密码修改 ===
 function renderProfile() {
   const name = state.profile.nickname || '用户';
   $('#profAvatar').textContent = name.slice(0,1).toUpperCase();
@@ -1003,9 +1017,6 @@ async function changeRole(uid, uname, role) {
   state.users = (await sb.from('profiles').select('*')).data || []; renderAdmin(); toast('权限已更新');
 }
 
-// ==========================================
-// ★ 即时通讯 IM 实时推送逻辑
-// ==========================================
 function updateGlobalUnread() {
   let total = 0;
   for (const rId in state.unreadMessages) { total += state.unreadMessages[rId]; }
@@ -1058,7 +1069,7 @@ function openRoom(roomId, type) {
   const room = state.chatRooms.find(r => r.id === roomId);
   if (!room) return;
   state.currentRoom = room;
-  state.unreadMessages[room.id] = 0; // 清空未读
+  state.unreadMessages[room.id] = 0;
   
   $('#imHeader').textContent = room.name;
   $('#imInputArea').hidden = false;
@@ -1095,7 +1106,36 @@ async function fetchMessages() {
   container.scrollTop = container.scrollHeight;
 }
 
-// 初始化 WebSocket 实时监听
+function showMsgNotification(roomId, senderName, content) {
+  const room = state.chatRooms.find(r => r.id === roomId);
+  const roomName = room ? room.name : '新消息';
+  
+  const el = document.createElement('div');
+  el.className = 'msg-notif';
+  el.innerHTML = `
+    <div class="title"><span>${senderName}</span> <span style="font-size:10px;color:var(--muted)">${roomName}</span></div>
+    <div class="content">${renderMD(content)}</div>
+  `;
+  
+  el.onclick = () => {
+    if ($('#view-messages').hidden) {
+      document.querySelector('[data-view="messages"]').click();
+    }
+    openRoom(roomId, room.type);
+    el.remove();
+  };
+  
+  document.body.appendChild(el);
+  
+  setTimeout(() => {
+    if(el.parentNode) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(50px)';
+      setTimeout(() => el.remove(), 300);
+    }
+  }, 5000);
+}
+
 function initRealtime() {
   if (state.chatChannel) sb.removeChannel(state.chatChannel);
   
@@ -1103,15 +1143,14 @@ function initRealtime() {
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
       const newMsg = payload.new;
       
-      // 如果推过来的消息属于当前正在看的聊天室，直接刷新视图
       if (state.currentRoom && newMsg.room_id === state.currentRoom.id) {
         fetchMessages();
       } 
-      // 如果不是当前聊天室，且不是自己发的，才增加未读红点
       else if (newMsg.sender_id !== state.user.id) {
         if (!state.unreadMessages[newMsg.room_id]) state.unreadMessages[newMsg.room_id] = 0;
         state.unreadMessages[newMsg.room_id]++;
-        renderIMSidebar(); // 更新侧边栏红点
+        renderIMSidebar(); 
+        showMsgNotification(newMsg.room_id, newMsg.sender_name, newMsg.content);
       }
     })
     .subscribe();
@@ -1132,12 +1171,9 @@ async function sendMsg() {
   };
   const res = await sb.from('chat_messages').insert(msg);
   if (res.error) return toast(res.error.message, 'err');
-  
-  // ★ 主动刷新当前聊天窗口，实现秒显
   fetchMessages();
 }
 
-// 创建群聊
 $('#btnNewGroup').addEventListener('click', () => {
   const otherUsers = state.users.filter(u => u.id !== state.user.id);
   openModal(`
@@ -1169,7 +1205,6 @@ async function submitCreateGroup() {
   openRoom(res.data.id, 'group'); toast('群聊创建成功');
 }
 
-// 启动 & 事件绑定
 function bindAuthEvents() {
   const toggle = $('#acctToggle'), drop = $('#acctDrop');
   toggle.addEventListener('click', e => {
@@ -1277,7 +1312,6 @@ $$('.nav-link').forEach(btn => {
     $$('.view').forEach(v => v.hidden = true);
     $(`#view-${target}`).hidden = false;
     
-    // 如果切到了消息页，清除顶部的红点
     if (target === 'messages') updateGlobalUnread();
   });
 });
@@ -1287,6 +1321,19 @@ $('#userChip').addEventListener('click', () => {
   $$('.view').forEach(v => v.hidden = true);
   $('#view-profile').hidden = false;
 });
+
+// ★ 看板/列表切换
+$$('.vt-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $$('.vt-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.viewMode = btn.getAttribute('data-mode');
+    renderProjects();
+  });
+});
+
+// 搜索
+$('#searchInput').addEventListener('input', e => { state.filters.q = e.target.value; renderProjects(); });
 
 async function boot() {
   const ses = await sb.auth.getSession();
